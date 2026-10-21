@@ -1,0 +1,19 @@
+algorithm,graph_type,V,E,repeats,average_ms,average_operations
+Kruskal,undirected,10,30,5,0.044060,185
+Prim,undirected,10,30,5,0.069420,105
+Kosaraju,directed cyclic,10,30,5,0.045880,90
+Topological (DAG),DAG,10,30,5,0.020080,60
+Topological (cycle),directed cyclic,10,30,5,0.004940,30
+Dijkstra,DAG,10,30,5,0.026480,54
+Kruskal,undirected,100,500,5,0.476120,4858
+Prim,undirected,100,500,5,0.361480,1713
+Kosaraju,directed cyclic,100,500,5,0.225240,1500
+Topological (DAG),DAG,100,500,5,0.165260,1000
+Topological (cycle),directed cyclic,100,500,5,0.044800,500
+Dijkstra,DAG,100,500,5,0.153500,740
+Kruskal,undirected,1000,5000,5,2.151060,58023
+Prim,undirected,1000,5000,5,2.895980,17833
+Kosaraju,directed cyclic,1000,5000,5,1.398160,15000
+Topological (DAG),DAG,1000,5000,5,0.782920,10000
+Topological (cycle),directed cyclic,1000,5000,5,0.254220,5000
+Dijkstra,DAG,1000,5000,5,1.270260,7412
