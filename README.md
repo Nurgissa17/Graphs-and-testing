@@ -1,68 +1,45 @@
 # Assignment 3 — Smart City Infrastructure and Route Planning
-
 ## Overview
-
-This Java program treats city districts as vertices and roads as weighted edges.
-It uses undirected graphs for road construction and directed graphs for one-way roads and dependencies.
-Graphs are stored as adjacency lists. Vertices are numbered from `0` to `V - 1`.
+This is a Java program about city roads. Districts are vertices, roads are edges, and weights are costs or distances. I used adjacency lists and both directed and undirected graphs.
 
 ## Implementation
+- **DSU:** `find` uses path compression and `union` uses union by size.
+- **Kruskal:** sorts edges and uses DSU to avoid cycles.
+- **Prim:** uses a priority queue to choose cheap edges.
+- **Kosaraju:** uses two DFS passes and a reversed graph to find SCCs.
+- **Topological Sort (Kahn):** processes vertices with no incoming edges. It detects cycles when an ordering is impossible.
+- **Dijkstra:** uses a priority queue to find shortest distances and paths. Unreachable vertices have distance `INF`.
+Kruskal and Prim also return the total MST weight and whether the graph is connected. Dijkstra uses non-negative weights because negative weights can change a distance that was already chosen.
 
-- **DSU:** `find` uses path compression; `union` joins the smaller group to the larger one.
-- **Kruskal:** sorts roads by cost and uses DSU to avoid cycles.
-- **Prim:** uses a priority queue to select the cheapest road connecting a new district.
-- **Kosaraju:** uses DFS, reverses the edges, then uses DFS again to find SCCs, as in Lecture 7.
-- **Topological sorting (Kahn):** takes vertices with no incoming edges first. If vertices remain, the graph has a cycle.
-- **Dijkstra:** uses a priority queue to find distances and paths from vertex `0`. Unreachable vertices have distance `INF` and an empty path.
-
-Both MST algorithms return the chosen roads, total cost and whether all districts are connected.
-Dijkstra needs non-negative weights: a negative edge could make an already chosen shortest distance smaller later.
-
-**Run:** Open the project in IntelliJ, mark `src` as **Sources Root**, and run `Main.java`.
-It runs the tests, prints examples and runs the experiments. Only standard Java is used.
+To run: mark `src` as **Sources Root** in IntelliJ and run `Main.java`. It runs the tests, examples and experiments. Only standard Java is used.
 
 ## Complexity Analysis
-
-`V` = vertices, `E` = edges, `α(V)` = a very slowly growing function.
-Graphs use adjacency lists; priority queues use binary heaps.
+`V` = vertices, `E` = edges. I used adjacency lists and binary-heap priority queues.
 
 | Algorithm | Time | Extra space |
 | --- | --- | --- |
-| DSU `find` / `union` | `O(α(V))` each on average over many calls | `O(V)` |
+| DSU `find` / `union` | `O(α(V))` amortized | `O(V)` |
 | Kruskal | `O(E log E + E α(V))` | `O(V + E)` |
 | Prim | `O(E log V)` | `O(V + E)` |
-| Kosaraju (SCC) | `O(V + E)` | `O(V + E)` |
-| Kahn (topological order) | `O(V + E)` | `O(V)` |
+| Kosaraju | `O(V + E)` | `O(V + E)` |
+| Topological Sort | `O(V + E)` | `O(V)` |
 | Dijkstra | `O((V + E) log V)` | `O(V + E)` |
 
-Kruskal sorts edges. Prim and Dijkstra use priority queues.
-Kosaraju and Kahn examine vertices and edges. DSU path compression and union by size keep its trees shallow.
-More vertices need more storage; more edges mean more work.
+`α(V)` grows very slowly. Path compression and union by size make DSU faster. Kruskal sorts edges; Prim and Dijkstra use queues. Kosaraju and Topological Sort check vertices and edges. More vertices and edges usually mean more work and memory.
 
 ## Experimental Setup
-
-| Size | Vertices | Edges |
+| Graph | V | E |
 | --- | ---: | ---: |
 | Small | 10 | 30 |
 | Medium | 100 | 500 |
 | Large | 1000 | 5000 |
 
-Graphs use fixed random seeds so they can be generated again.
-Undirected graphs start with a spanning tree, so they are connected.
-DAGs use edges from lower to higher vertex numbers, so they have no cycles.
-Cyclic directed graphs also include `0 → 1 → 2 → 0`.
-Extra edges are random and unique; weights range from 1 to 20.
-Seeds are `42 + V` (undirected), `142 + V` (DAG), and `242 + V` (cyclic).
-
-Each algorithm runs **5 times** per graph size. `System.nanoTime()` measures only the algorithm, not graph creation.
-The program counts edge checks and relevant queue, DSU or sorting operations.
+I used fixed random seeds to make repeatable graphs. Undirected graphs are connected. In DAGs, edges go from lower to higher vertex numbers. Cyclic graphs contain `0 → 1 → 2 → 0`. Other edges are random and unique, with weights from 1 to 20. Seeds: `42 + V`, `142 + V`, `242 + V` for these graph types.
+Each algorithm runs **5 times** for every size. `System.nanoTime()` measures the algorithm (not graph generation). I record average time and operation counts, such as edge checks, comparisons, DSU calls and queue operations.
 
 ## Results
-
-Values are **average milliseconds / average operations** over 5 runs.
-The same numbers are saved in `results/tables/benchmark.csv` and shown in the plots.
-
-| Algorithm | 10 vertices, 30 edges | 100 vertices, 500 edges | 1000 vertices, 5000 edges |
+Each value means **average time (ms) / average operations**. Results are also saved in `results/tables/benchmark.csv`.
+| Algorithm | Small | Medium | Large |
 | --- | ---: | ---: | ---: |
 | Kruskal | 0.048 / 185 | 1.001 / 4858 | 3.211 / 58023 |
 | Prim | 0.119 / 105 | 0.934 / 1713 | 4.752 / 17833 |
@@ -71,32 +48,19 @@ The same numbers are saved in `results/tables/benchmark.csv` and shown in the pl
 | Topological (cycle) | 0.006 / 30 | 0.025 / 500 | 0.269 / 5000 |
 | Dijkstra | 0.043 / 54 | 0.232 / 740 | 1.618 / 7412 |
 
-**Execution time vs. vertices:**
-
-![Time versus vertices](results/plots/time_vs_vertices.png)
-
-**Execution time vs. edges:**
-
-![Time versus edges](results/plots/time_vs_edges.png)
+Time vs. vertices:
+![Time vs. vertices](results/plots/time_vs_vertices.png)
+Time vs. edges:
+![Time vs. edges](results/plots/time_vs_edges.png)
 
 ## Comparison and Discussion
-
-- **Kruskal vs. Prim:** both give the same MST weight. Kruskal sorts edges; Prim uses a priority queue. Their operation counts measure different work, so they are not directly comparable.
-- **DSU:** path compression and union by size make repeated `find` and `union` operations fast.
-- **SCC:** Kosaraju examines edges in two DFS passes and while reversing them; the work grows with graph size.
-- **Topological ordering:** Kahn processes all DAG vertices but stops early on these cyclic graphs because none has zero incoming edges.
-- **Dijkstra:** larger graphs need more edge checks and queue operations.
-
-The results generally agree with the complexity analysis. Exact times may vary between runs.
-Since `V` and `E` grow together, the plots do not measure their effects separately.
+Kruskal and Prim give the same MST weight. Kruskal sorts edges; Prim uses a queue. Their operation counts measure different things, so they cannot be compared directly. DSU is efficient because of path compression and union by size.
+Kosaraju and Dijkstra usually take longer on bigger graphs. Topological Sort works on DAGs and detects cycles. This agrees with the complexity analysis. Exact times vary between runs. Here `V` and `E` grow together, so the plots cannot show their effects separately.
 
 ## Testing
+I ran **7 tests**: small graph, disconnected graph, DAG and cycle, multiple MSTs with equal weights, SCCs, unreachable vertex, and single vertex.
+They check MST weights, valid topological order, cycle detection, that each vertex belongs to one SCC, and correct Dijkstra distances and paths.
 
-Seven tests cover small, disconnected and single-vertex graphs; cycles; equal-weight edges and multiple MSTs; SCCs; and unreachable vertices.
-They check that both MST weights match, DAG orders are valid, cycles are detected, SCCs include each vertex once, and Dijkstra returns correct paths and distances.
-
-**Result: 7/7 passed.** Experiments also compare MST weights and check cycle detection.
-
+**Result: 7/7 passed.**
 ## Conclusion
-
-Use Kruskal or Prim to connect districts at minimum cost, Kosaraju to find mutually reachable districts, Kahn to order tasks without cycles, and Dijkstra to find shortest routes with non-negative weights.
+Kruskal and Prim help build a low-cost road network. Kosaraju finds strongly connected districts. Topological Sort orders tasks without cycles. Dijkstra finds shortest routes with non-negative weights.
