@@ -1,5 +1,4 @@
-# Assignment 3 — Smart City Infrastructure and Route Planning
-## Overview
+# Assignment 3 
 This is a Java program about city roads. Districts are vertices, roads are edges, and weights are costs or distances. I used adjacency lists and both directed and undirected graphs.
 
 ## Implementation
